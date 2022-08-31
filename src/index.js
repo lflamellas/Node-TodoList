@@ -29,7 +29,7 @@ app.post('/users', (request, response) => {
     todos: []
   }
   users.push(user)
-  return response.status(201).send()
+  return response.status(201).json(user)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
@@ -56,17 +56,17 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const {id} = request.params
   const{title, deadline} = request.body
   const task = user.todos.find(task => task.id === id)
-  if(!task) return response.status(400).json({ error: "Task does not exist."})
+  if(!task) return response.status(404).json({ error: "Task does not exist."})
   task.title = title
   task.deadline = new Date(deadline)
-  return response.status(201).send()
+  return response.status(201).json(task)
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const {user} = request
   const {id} = request.params
   const task = user.todos.find(task => task.id === id)
-  if(!task) return response.status(400).json({ error: "Task does not exist."})
+  if(!task) return response.status(404).json({ error: "Task does not exist."})
   task.done = true
   return response.status(200).json(task)
 });
@@ -75,9 +75,9 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const {user} = request
   const {id} = request.params
   const task = user.todos.find(task => task.id === id)
-  if(!task) return response.status(400).json({ error: "Task does not exist."})
+  if(!task) return response.status(404).json({ error: "Task does not exist."})
   user.todos.splice(task, 1)
-  return response.status(200).json(user.todos)
+  return response.status(204).json(user.todos)
 });
 
 module.exports = app;
